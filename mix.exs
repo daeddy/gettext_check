@@ -13,6 +13,7 @@ defmodule GettextCheck.MixProject do
       elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
+      dialyzer: [plt_add_apps: [:mix]],
 
       # Hex
       description: @description,
@@ -52,7 +53,6 @@ defmodule GettextCheck.MixProject do
       # Dev deps
       {:credo, "~> 1.7.0", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.19", only: :dev},
-      {:excoveralls, "~> 0.17", only: :test},
       {:dialyxir, "~> 1.3", only: [:dev], runtime: false}
     ]
   end

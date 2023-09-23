@@ -30,6 +30,7 @@ defmodule Mix.Tasks.GettextCheck do
   @default_priv "priv/gettext"
 
   @impl Mix.Task
+  @spec run([binary]) :: nil
   def run(args) do
     {opts, _} =
       OptionParser.parse!(args,
