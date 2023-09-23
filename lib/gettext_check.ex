@@ -29,6 +29,9 @@ defmodule GettextCheck do
   pipeline can help prevent pushing mising translations to
   production.
 
+  > This library uses [expo](https://hexdocs.pm/expo/readme.html)
+  internally to parse the `po`/`pot` files.
+
   ## Usage
 
   Call `mix gettext_check` from the root of your project.
@@ -49,13 +52,13 @@ defmodule GettextCheck do
 
   `GettextCheck` can be configured in two ways:
 
-  ### 1. Command line options
+  #### 1. Command line options
 
   ```bash
     mix gettext_check --locale ja --priv priv/gettext
   ```
 
-  ### 2. Mix config
+  #### 2. Mix config
 
   ```elixir
     config :gettext_check,
@@ -105,7 +108,7 @@ defmodule GettextCheck do
   end
 
   @doc """
-  Checks a message for missing translation and returns any errors.
+  Gets any missing translation errors from a message.
 
   ## Examples
 
