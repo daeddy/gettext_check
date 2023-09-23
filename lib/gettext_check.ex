@@ -97,13 +97,7 @@ defmodule GettextCheck do
     %Messages{messages: messages} = result
 
     Enum.reduce(messages, [], fn msg, errors ->
-      error = get_errors(msg, file_path)
-
-      if error != nil do
-        [error | errors]
-      else
-        errors
-      end
+      get_errors(msg, file_path) ++ errors
     end)
   end
 
@@ -123,7 +117,7 @@ defmodule GettextCheck do
       iex> get_errors(%Message.Singular{msgid: ["bar"], msgstr: ["bar"]}, "priv/locales/ja/LC_MESSAGES/default.po")
       []
 
-      iex> get_errors(%Message.Plural{msgid: ["bar"], msgstr: %{0 => [""], 1 => [""]}}, "priv/locales/ja/LC_MESSAGES/default.po")
+      iex> get_errors(%Message.Plural{msgid: ["bar"], msgid_plural: ["bars"], msgstr: %{0 => [""], 1 => [""]}}, "priv/locales/ja/LC_MESSAGES/default.po")
       [
         "
           text: 'bar'
@@ -143,27 +137,20 @@ defmodule GettextCheck do
     if missing_msg?(msgstr) do
       [format_error(message, file_path)]
     else
-      nil
+      []
     end
   end
 
   def get_errors(%Message.Plural{} = message, file_path) do
     %Message.Plural{msgstr: msgstr} = Message.Plural.rebalance(message)
 
-    errors =
-      Enum.reduce(msgstr, [], fn {index, msg}, errors ->
-        if missing_msg?(msg) do
-          [format_error(message, index, file_path) | errors]
-        else
-          errors
-        end
-      end)
-
-    if errors != [] do
-      errors
-    else
-      nil
-    end
+    Enum.reduce(msgstr, [], fn {index, msg}, errors ->
+      if missing_msg?(msg) do
+        [format_error(message, index, file_path) | errors]
+      else
+        errors
+      end
+    end)
   end
 
   @spec missing_msg?([String.t()]) :: boolean
