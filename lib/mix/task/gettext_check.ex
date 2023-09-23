@@ -1,8 +1,28 @@
-defmodule Mix.Tasks.GettextCheck.Check do
-  @shortdoc "Creates Minio buckets"
+defmodule Mix.Tasks.GettextCheck do
+  @shortdoc "Checks gettext translations for missing translations"
 
   @moduledoc """
-  Creates the Minio buckets and policies needed in the dev and test environment.
+  Checks gettext translations for missing translations and raises
+  an error if a translation is missing.
+
+  Your files must be saved in the [gettext](https://github.com/elixir-gettext/gettext#usage) directory structure
+  e.g. `priv/gettext/LOCALE/LC_MESSAGES/DOMAIN.po`
+
+  GNU gettext `.pot`, `po` files are supported.
+
+  ```bash
+  mix gettext_check [OPTIONS]
+  ```
+
+  ## Options
+
+  * `--locale` or `-l` - the locale to check
+    * Will be used with priv to find the locale files (e.g. `{priv}/{locale}/LC_MESSAGES`)
+    * This can also be set under the config
+    * Required either here or under the config
+  * `--priv` or `-p` - the path to the priv directory
+    * Defaults to `priv/gettext`
+    * This can also be set under the config
   """
 
   use Mix.Task
@@ -28,7 +48,7 @@ defmodule Mix.Tasks.GettextCheck.Check do
     priv = config[:priv] || opts[:priv] || @default_priv
 
     path = Path.join([priv, locale, "LC_MESSAGES"])
-    files = Path.wildcard("#{path}/*.po")
+    files = Path.wildcard("#{path}/*.{po,pot}")
 
     if files == [] do
       Mix.raise("No locale files found in #{path} for locale: '#{locale}'")

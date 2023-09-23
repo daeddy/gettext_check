@@ -1,6 +1,68 @@
 defmodule GettextCheck do
   @moduledoc """
-  Documentation for `GettextCheck`.
+  `GettextCheck` module allows to check for missing translations
+  in [gettext](https://www.gnu.org/software/gettext/) `po` and `pot` files.
+
+  It is made to work with the [elixir-gettext/gettext](https://github.com/elixir-gettext/gettext/blob/main/lib/gettext.ex)
+  library.
+
+  ## Basic Overview
+
+  Using [elixir-gettext/gettext](https://github.com/elixir-gettext/gettext/blob/main/lib/gettext.ex)
+  on you elixir project will create a `priv/gettext`
+  directory with the following structure:
+
+      priv/gettext
+      ├── en
+      │   └── LC_MESSAGES
+      │       └── default.po
+      └── en_US
+          └── LC_MESSAGES
+              └── default.po
+
+  These files might be missing translations under `msgstr`
+  (or `msgstr[0]` and `msgstr[1]` for plural translations).
+  In a typical dev flow you would add the translations manually
+  after extracting them from your code.
+
+  Runing `GettextCheck` before pushing your code to a CI/CD
+  pipeline can help prevent pushing mising translations to
+  production.
+
+  ## Usage
+
+  Call `mix gettext_check` from the root of your project.
+
+  Any missing translations will be listed in the output with the respective line number
+
+  ```bash
+        Missing translations:
+
+          text: 'Online'
+          /app/priv/locales/ja/LC_MESSAGES/default.po:7364
+  ```
+
+  ## Configuration
+
+  You need to specify the locale but the priv directory is optional
+  (default to `priv/gettext`).
+
+  `GettextCheck` can be configured in two ways:
+
+  ### 1. Command line options
+
+  ```bash
+    mix gettext_check --locale ja --priv priv/gettext
+  ```
+
+  ### 2. Mix config
+
+  ```elixir
+    config :gettext_check,
+      locale: "ja",
+      priv: "priv/gettext"
+  ```
+
   """
 
   @root_path Path.dirname(__DIR__)
