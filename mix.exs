@@ -1,26 +1,39 @@
 defmodule GettextCheck.MixProject do
   use Mix.Project
 
-  @description "Check gettext translations for missing keys"
+  @description "Check gettext translations for missing translations"
+
+  @version "0.1.0"
+  @repo_url "https://github.com/daeddy/gettext_check"
 
   def project do
     [
       app: :gettext_check,
-      version: "0.1.0",
+      version: @version,
       elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
+      deps: deps(),
+
+      # Hex
       description: @description,
       package: package(),
-      deps: deps()
+
+      # Docs
+      name: "gettext_check",
+      docs: [
+        source_ref: "v#{@version}",
+        main: "GettextCheck",
+        source_url: @repo_url
+      ]
     ]
   end
 
   defp package do
     [
-      files: ["lib", "mix.exs", "README*", "LICENSE*"],
+      files: ~w(lib mix.exs *.md),
       maintainers: ["Eduardo Porto"],
       licenses: ["MIT"],
-      links: %{"GitHub" => "https://github.com/daeddy/gettext_check"}
+      links: %{"GitHub" => @repo_url}
     ]
   end
 
