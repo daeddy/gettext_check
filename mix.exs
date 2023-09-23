@@ -37,6 +37,7 @@ defmodule GettextCheck.MixProject do
       {:expo, "~> 0.4.0"},
 
       # Dev deps
+      {:credo, "~> 1.7.0", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.19", only: :dev},
       {:excoveralls, "~> 0.17", only: :test},
       {:dialyxir, "~> 1.3", only: [:dev], runtime: false}

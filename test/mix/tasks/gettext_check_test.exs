@@ -41,11 +41,18 @@ defmodule Mix.Tasks.GettextCheck.Test do
 
     %{test: test, tmp_dir: tmp_dir, file_path_po: file_path_po, file_path_pot: file_path_pot}
   end
+
   describe "run/1" do
-    test "lists missing translations for po files", %{test: test, tmp_dir: tmp_dir, file_path_po: file_path_po} do
+    test "lists missing translations for po files", %{
+      test: test,
+      tmp_dir: tmp_dir,
+      file_path_po: file_path_po
+    } do
       %Mix.Error{message: message} =
         assert_raise Mix.Error, fn ->
-          Mix.Project.in_project(test, tmp_dir, fn _module -> GettextCheck.run(["-l", "pt-br"]) end)
+          Mix.Project.in_project(test, tmp_dir, fn _module ->
+            GettextCheck.run(["-l", "pt-br"])
+          end)
         end
 
       assert message =~ "Missing translations"
@@ -53,10 +60,16 @@ defmodule Mix.Tasks.GettextCheck.Test do
       assert message =~ "#{file_path_po}:22"
     end
 
-    test "lists missing translations for pot files", %{test: test, tmp_dir: tmp_dir, file_path_pot: file_path_pot} do
+    test "lists missing translations for pot files", %{
+      test: test,
+      tmp_dir: tmp_dir,
+      file_path_pot: file_path_pot
+    } do
       %Mix.Error{message: message} =
         assert_raise Mix.Error, fn ->
-          Mix.Project.in_project(test, tmp_dir, fn _module -> GettextCheck.run(["-l", "pt-br"]) end)
+          Mix.Project.in_project(test, tmp_dir, fn _module ->
+            GettextCheck.run(["-l", "pt-br"])
+          end)
         end
 
       assert message =~ "Missing translations"
@@ -67,7 +80,9 @@ defmodule Mix.Tasks.GettextCheck.Test do
     test "returns error for invalid args", %{test: test, tmp_dir: tmp_dir} do
       %Mix.Error{message: message} =
         assert_raise Mix.Error, fn ->
-          Mix.Project.in_project(test, tmp_dir, fn _module -> GettextCheck.run(["-err", "pt-br"]) end)
+          Mix.Project.in_project(test, tmp_dir, fn _module ->
+            GettextCheck.run(["-err", "pt-br"])
+          end)
         end
 
       assert message =~ "No locale specified. Please use --locale or -l"
@@ -79,7 +94,8 @@ defmodule Mix.Tasks.GettextCheck.Test do
           end)
         end
 
-      assert message =~ "No locale files found in missing/dir/pt-br/LC_MESSAGES for locale: 'pt-br'"
+      assert message =~
+               "No locale files found in missing/dir/pt-br/LC_MESSAGES for locale: 'pt-br'"
     end
 
     test "returns error for missing file", %{test: test, tmp_dir: tmp_dir} do
