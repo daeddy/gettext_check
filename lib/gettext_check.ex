@@ -80,8 +80,8 @@ defmodule GettextCheck do
 
       iex> check("priv/locales/ja/LC_MESSAGES/default.po")
       [
-        ["\n", "\e[0m", "msgid: Hello'", "\n", "\e[1m", "\e[31m", "/app/priv/locales/ja/LC_MESSAGES/default.po:12", "\n"],
-        ["\n", "\e[0m", "msgid: World'", "\n", "\e[1m", "\e[31m", "/app/priv/locales/ja/LC_MESSAGES/default.po:15", "\n"]
+        [_, _ANSI_reset, "msgid: Hello'", _, _ANSI_bright, _ANSI_red, "/app/priv/locales/ja/LC_MESSAGES/default.po:12", _],
+        [_, _ANSI_reset, "msgid: World'", _, _ANSI_bright, _ANSI_red, "/app/priv/locales/ja/LC_MESSAGES/default.po:15", _]
       ]
 
   """
@@ -102,7 +102,7 @@ defmodule GettextCheck do
 
       iex> get_errors(%Message.Singular{msgid: ["foo"], msgstr: [""]}, "priv/locales/ja/LC_MESSAGES/default.po")
       [
-        ["\n", "\e[0m", "msgid: foo'", "\n", "\e[1m", "\e[31m", "/app/priv/locales/ja/LC_MESSAGES/default.po:", "\n"]
+        [_, _ANSI_reset, "msgid: foo'", _, _ANSI_bright, _ANSI_red, "/app/priv/locales/ja/LC_MESSAGES/default.po:", _]
       ]
 
       iex> get_errors(%Message.Singular{msgid: ["bar"], msgstr: ["bar"]}, "priv/locales/ja/LC_MESSAGES/default.po")
@@ -110,8 +110,8 @@ defmodule GettextCheck do
 
       iex> get_errors(%Message.Plural{msgid: ["bar"], msgid_plural: ["bars"], msgstr: %{0 => [""], 1 => [""]}}, "priv/locales/ja/LC_MESSAGES/default.po")
       [
-        ["\n", "\e[0m", "msgid: bars'", "\n", "\e[1m", "\e[31m", "/app/priv/locales/ja/LC_MESSAGES/default.po:", "\n"],
-        ["\n", "\e[0m", "msgid: bar'", "\n", "\e[1m", "\e[31m", "/app/priv/locales/ja/LC_MESSAGES/default.po:", "\n"]
+        [_, _ANSI_reset, "msgid: bars'", _, _ANSI_bright, _ANSI_red, "/app/priv/locales/ja/LC_MESSAGES/default.po:", _],
+        [_, _ANSI_reset, "msgid: bar'", _, _ANSI_bright, _ANSI_red, "/app/priv/locales/ja/LC_MESSAGES/default.po:", _]
       ]
 
   """
