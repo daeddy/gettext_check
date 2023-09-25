@@ -56,7 +56,7 @@ defmodule Mix.Tasks.GettextCheck.Test do
         end
 
       assert message =~ "Missing translations"
-      assert message =~ "text: 'World"
+      assert message =~ "msgid: 'World"
       assert message =~ "#{file_path_po}:22"
     end
 
@@ -73,7 +73,7 @@ defmodule Mix.Tasks.GettextCheck.Test do
         end
 
       assert message =~ "Missing translations"
-      assert message =~ "text: 'World"
+      assert message =~ "msgid: 'World"
       assert message =~ "#{file_path_pot}:22"
     end
 

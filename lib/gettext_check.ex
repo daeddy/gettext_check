@@ -41,8 +41,8 @@ defmodule GettextCheck do
   ```bash
         Missing translations:
 
-          text: 'Online'
-          /app/priv/locales/ja/LC_MESSAGES/default.po:7364
+        msgid: 'Online'
+        /app/priv/locales/ja/LC_MESSAGES/default.po:7364
   ```
 
   ## Configuration
@@ -80,14 +80,8 @@ defmodule GettextCheck do
 
       iex> check("priv/locales/ja/LC_MESSAGES/default.po")
       [
-        "
-          text: 'Online'
-          /root/gettext_check/priv/locales/ja/LC_MESSAGES/default.po:7364
-        ",
-        "
-          text: 'already assigned'
-          /root/gettext_check/priv/locales/ja/LC_MESSAGES/errors.po:108
-        "
+        ["\n", "\e[0m", "msgid: Hello'", "\n", "\e[1m", "\e[31m", "/app/priv/locales/ja/LC_MESSAGES/default.po:12", "\n"],
+        ["\n", "\e[0m", "msgid: World'", "\n", "\e[1m", "\e[31m", "/app/priv/locales/ja/LC_MESSAGES/default.po:15", "\n"]
       ]
 
   """
@@ -108,10 +102,7 @@ defmodule GettextCheck do
 
       iex> get_errors(%Message.Singular{msgid: ["foo"], msgstr: [""]}, "priv/locales/ja/LC_MESSAGES/default.po")
       [
-        "
-          text: 'foo'
-          /root/gettext_check/priv/locales/ja/LC_MESSAGES/default.po:2
-        "
+        ["\n", "\e[0m", "msgid: foo'", "\n", "\e[1m", "\e[31m", "/app/priv/locales/ja/LC_MESSAGES/default.po:", "\n"]
       ]
 
       iex> get_errors(%Message.Singular{msgid: ["bar"], msgstr: ["bar"]}, "priv/locales/ja/LC_MESSAGES/default.po")
@@ -119,34 +110,35 @@ defmodule GettextCheck do
 
       iex> get_errors(%Message.Plural{msgid: ["bar"], msgid_plural: ["bars"], msgstr: %{0 => [""], 1 => [""]}}, "priv/locales/ja/LC_MESSAGES/default.po")
       [
-        "
-          text: 'bar'
-          /root/gettext_check/priv/locales/ja/LC_MESSAGES/default.po:2
-        ",
-        "
-          text: 'bar'
-          /root/gettext_check/priv/locales/ja/LC_MESSAGES/default.po:3
-        "
+        ["\n", "\e[0m", "msgid: bars'", "\n", "\e[1m", "\e[31m", "/app/priv/locales/ja/LC_MESSAGES/default.po:", "\n"],
+        ["\n", "\e[0m", "msgid: bar'", "\n", "\e[1m", "\e[31m", "/app/priv/locales/ja/LC_MESSAGES/default.po:", "\n"]
       ]
 
   """
   @spec get_errors(Message.t(), String.t()) :: [String.t()] | nil
   def get_errors(%Message.Singular{} = message, file_path) do
-    %Message.Singular{msgstr: msgstr} = Message.Singular.rebalance(message)
+    %Message.Singular{msgid: msgid, msgstr: msgstr} = Message.Singular.rebalance(message)
 
     if missing_msg?(msgstr) do
-      [format_error(message, file_path)]
+      line = Message.Singular.source_line_number(message, :msgstr)
+
+      [format_error(msgid, file_path, line)]
     else
       []
     end
   end
 
   def get_errors(%Message.Plural{} = message, file_path) do
-    %Message.Plural{msgstr: msgstr} = Message.Plural.rebalance(message)
+    %Message.Plural{msgid: msgid, msgid_plural: msgid_plural, msgstr: msgstr} =
+      Message.Plural.rebalance(message)
 
     Enum.reduce(msgstr, [], fn {index, msg}, errors ->
+      id = if index > 0, do: msgid_plural, else: msgid
+
       if missing_msg?(msg) do
-        [format_error(message, index, file_path) | errors]
+        line = Message.Plural.source_line_number(message, {:msgstr, index})
+
+        [format_error(id, file_path, line) | errors]
       else
         errors
       end
@@ -158,31 +150,16 @@ defmodule GettextCheck do
     Enum.any?(msgstr, &(&1 == ""))
   end
 
-  @spec format_error(Message.t(), String.t()) :: String.t()
-  defp format_error(%Message.Singular{msgid: msgid} = message, file_path) do
-    line = Message.Singular.source_line_number(message, :msgstr)
-
-    """
-
-    text: '#{msgid}'
-    #{@root_path}/#{file_path}:#{line}
-
-    """
-  end
-
-  defp format_error(
-         %Message.Plural{msgid: msgid, msgid_plural: msgid_plural} = message,
-         index,
-         file_path
-       ) do
-    id = if index > 0, do: msgid_plural, else: msgid
-    line = Message.Plural.source_line_number(message, {:msgstr, index})
-
-    """
-
-    text: '#{id}'
-    #{@root_path}/#{file_path}:#{line}
-
-    """
+  defp format_error(msgid, file_path, line) do
+    [
+      "\n",
+      IO.ANSI.reset(),
+      "msgid: '#{msgid}'",
+      "\n",
+      IO.ANSI.bright(),
+      IO.ANSI.red(),
+      "#{@root_path}/#{file_path}:#{line}",
+      "\n"
+    ]
   end
 end

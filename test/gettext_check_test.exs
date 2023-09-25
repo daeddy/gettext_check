@@ -94,8 +94,8 @@ defmodule GettextCheckTest do
                  GettextCheck.check(file_path_missing)
                end)
 
-      assert error =~ "text: 'World'"
-      assert error =~ "#{@file_path}/missing.po:16"
+      assert ["\n", "\e[0m", "msgid: 'World'", "\n", "\e[1m", "\e[31m", path, "\n"] = error
+      assert path =~ "#{@file_path}/missing.po:16"
     end
 
     test "should return errors correctly [plural]", %{
@@ -108,11 +108,31 @@ defmodule GettextCheckTest do
                  GettextCheck.check(file_path_missing_plural)
                end)
 
-      assert error_1 =~ "text: 'should have %{count} items'"
-      assert error_1 =~ "#{@file_path}/missing_plural.po:18"
+      assert [
+               "\n",
+               "\e[0m",
+               "msgid: 'should have %{count} items'",
+               "\n",
+               "\e[1m",
+               "\e[31m",
+               path_1,
+               "\n"
+             ] = error_1
 
-      assert error_2 =~ "text: 'should have %{count} item'"
-      assert error_2 =~ "#{@file_path}/missing_plural.po:17"
+      assert path_1 =~ "#{@file_path}/missing_plural.po:18"
+
+      assert [
+               "\n",
+               "\e[0m",
+               "msgid: 'should have %{count} item'",
+               "\n",
+               "\e[1m",
+               "\e[31m",
+               path_2,
+               "\n"
+             ] = error_2
+
+      assert path_2 =~ "#{@file_path}/missing_plural.po:17"
     end
   end
 
@@ -121,8 +141,18 @@ defmodule GettextCheckTest do
       assert [error] =
                GettextCheck.get_errors(%Message.Singular{msgid: "foo", msgstr: [""]}, @file_path)
 
-      assert error =~ "text: 'foo'"
-      assert error =~ "#{@file_path}"
+      assert [
+               "\n",
+               "\e[0m",
+               "msgid: 'foo'",
+               "\n",
+               "\e[1m",
+               "\e[31m",
+               path,
+               "\n"
+             ] = error
+
+      assert path =~ "#{@file_path}:"
     end
 
     test "should return no errors from correct message [singular]" do
@@ -144,11 +174,11 @@ defmodule GettextCheckTest do
                  @file_path
                )
 
-      assert error_1 =~ "text: 'bars'"
-      assert error_1 =~ "#{@file_path}"
+      assert ["\n", "\e[0m", "msgid: 'bars'", "\n", "\e[1m", "\e[31m", path_1, "\n"] = error_1
+      assert path_1 =~ "#{@file_path}:"
 
-      assert error_2 =~ "text: 'bar'"
-      assert error_2 =~ "#{@file_path}"
+      assert ["\n", "\e[0m", "msgid: 'bar'", "\n", "\e[1m", "\e[31m", path_2, "\n"] = error_2
+      assert path_2 =~ "#{@file_path}:"
     end
 
     test "should return no errors from correct message [plural]" do
