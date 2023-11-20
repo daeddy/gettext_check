@@ -48,7 +48,7 @@ defmodule GettextCheck.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:expo, "~> 0.4.0"},
+      {:expo, "~> 0.5.0"},
 
       # Dev deps
       {:credo, "~> 1.7.0", only: [:dev, :test], runtime: false},
