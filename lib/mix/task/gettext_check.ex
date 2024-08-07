@@ -55,7 +55,7 @@ defmodule Mix.Tasks.GettextCheck do
       Mix.raise("No locale files found in #{path} for locale: '#{locale}'")
     end
 
-    errors = Enum.map(files, &GettextCheck.check/1)
+    errors = Enum.flat_map(files, &GettextCheck.check/1)
 
     if errors != [] do
       message = """
