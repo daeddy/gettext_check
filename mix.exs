@@ -3,14 +3,14 @@ defmodule GettextCheck.MixProject do
 
   @description "Check gettext translations for missing translations"
 
-  @version "0.2.1"
+  @version "0.3.0"
   @repo_url "https://github.com/daeddy/gettext_check"
 
   def project do
     [
       app: :gettext_check,
       version: @version,
-      elixir: "~> 1.15",
+      elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       dialyzer: [plt_add_apps: [:mix]],
